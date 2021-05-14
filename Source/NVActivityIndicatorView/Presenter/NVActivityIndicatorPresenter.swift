@@ -62,6 +62,7 @@ public final class ActivityData {
     /// Background color of the UI blocker
     let backgroundColor: UIColor
 
+    let canCanel: Bool
     /**
      Create information package used to display UI blocker.
 
@@ -90,7 +91,8 @@ public final class ActivityData {
                 displayTimeThreshold: Int? = nil,
                 minimumDisplayTime: Int? = nil,
                 backgroundColor: UIColor? = nil,
-                textColor: UIColor? = nil) {
+                textColor: UIColor? = nil,
+                canCanel: Bool = false) {
         self.size = size ?? NVActivityIndicatorView.DEFAULT_BLOCKER_SIZE
         self.message = message ?? NVActivityIndicatorView.DEFAULT_BLOCKER_MESSAGE
         self.messageFont = messageFont ?? NVActivityIndicatorView.DEFAULT_BLOCKER_MESSAGE_FONT
@@ -102,6 +104,7 @@ public final class ActivityData {
         self.minimumDisplayTime = minimumDisplayTime ?? NVActivityIndicatorView.DEFAULT_BLOCKER_MINIMUM_DISPLAY_TIME
         self.backgroundColor = backgroundColor ?? NVActivityIndicatorView.DEFAULT_BLOCKER_BACKGROUND_COLOR
         self.textColor = textColor ?? color ?? NVActivityIndicatorView.DEFAULT_TEXT_COLOR
+        self.canCanel = canCanel
     }
 }
 
@@ -264,6 +267,10 @@ public final class NVActivityIndicatorPresenter {
         containerView.backgroundColor = activityData.backgroundColor
         containerView.restorationIdentifier = restorationIdentifier
         containerView.translatesAutoresizingMaskIntoConstraints = false
+        if activityData.canCanel {
+            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(containerViewDidTap))
+            containerView.addGestureRecognizer(tapGestureRecognizer)
+        }
         fadeInAnimation?(containerView)
 
         let activityIndicatorView = NVActivityIndicatorView(
@@ -330,5 +337,9 @@ public final class NVActivityIndicatorPresenter {
                     }
             }
         }
+    }
+    
+    @objc func containerViewDidTap() {
+        stopAnimating(NVActivityIndicatorView.DEFAULT_FADE_OUT_ANIMATION)
     }
 }
